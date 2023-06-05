@@ -106,25 +106,44 @@ fn load_menu_add_friend(group: &mut Group) {
 }
 
 fn load_group_menu(user: &mut User) -> Result<(), String> {
-  let group = user.get_current_group();
+  let group_name = {
+    let group = user.get_current_group();
+    group.name.to_string()
+  };
+
+  let group_has_not_friends = {
+    let group = user.get_current_group();
+    !group.has_friends()
+  };
+
+  let group_has_not_bills = {
+    let group = user.get_current_group();
+    !group.has_bills()
+  };
+
+  let friends_names = {
+    let list = user.get_current_group().get_friends_names();
+
+    list
+  };
 
   loop {
-    println!("this is your group menu for '{}'.", &group.name.trim());
+    println!("this is your group menu for '{}'.", group_name);
     println!("");
 
     println!("Your friends:");
-    if !group.has_friends() {
+    if group_has_not_friends {
       println!("You don't have friends in this group, add one.");
       println!("");
     }
 
-    for (index, friend_name) in group.get_friends_names().iter().enumerate() {
+    for (index, friend_name) in friends_names.iter().enumerate() {
       println!("{}: {}", index + 1, friend_name);
     }
     println!("");
 
     println!("Your bills in this group:");
-    if !group.has_bills() {
+    if group_has_not_bills {
       println!("You don't have bills, add one.");
       println!("");
     }
@@ -140,8 +159,8 @@ fn load_group_menu(user: &mut User) -> Result<(), String> {
     match option {
       1 => {
         clear_terminal().unwrap();
-        load_menu_add_friend(group);
-        user.auto_save().unwrap();
+        load_menu_add_friend(user.get_current_group());
+        user.auto_save();
         continue;
       }
       0 => {
@@ -208,7 +227,7 @@ impl Group {
   }
 
   // create a function for group to get a names of friends in a vec
-  pub fn get_friends_names(&self) -> Vec<String> {
+  pub fn get_friends_names(&mut self) -> Vec<String> {
     let mut friends_names: Vec<String> = vec![];
     for friend in &self.friends {
       friends_names.push(friend.name.clone());
@@ -271,7 +290,7 @@ impl User {
   pub fn add_group_unique(&mut self, group_name: &str) -> Result<&mut Group, String> {
     let group_exists = self.groups.iter().any(|g| g.name == group_name);
     if !group_exists {
-      self.auto_save()?;
+      self.auto_save();
       Ok(self.add_group(group_name))
     } else {
       Err(format!("Group {} already exists", group_name))
@@ -279,11 +298,13 @@ impl User {
   }
 
   pub fn set_current_group(&mut self, index_group: usize) -> Option<Group> {
-    let group = self.groups.get(index_group).clone();
+    let group = {
+      let group = self.groups.get_mut(index_group);
+      group
+    };
 
     match group {
       Some(group) => {
-        self.auto_save();
         self.selected_group = Some(group.clone());
         self.selected_group.clone()
       }
@@ -291,7 +312,7 @@ impl User {
     }
   }
 
-  pub fn get_current_group(&mut self) -> &Group {
+  pub fn get_current_group(&mut self) -> &mut Group {
     self.selected_group.as_mut().unwrap()
   }
 
@@ -307,11 +328,10 @@ impl User {
     !self.groups.is_empty()
   }
 
-  pub fn auto_save(&self) -> Result<(), String> {
-    let json = serde_json::to_string(&self).unwrap();
+  pub fn auto_save(&mut self) {
+    let json = serde_json::to_string(self).unwrap();
     let mut file = File::create("user.json").unwrap();
     file.write_all(json.as_bytes()).unwrap();
-    Ok(())
   }
 
   pub fn load() -> Result<Self, String> {
