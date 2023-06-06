@@ -4,7 +4,9 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, Write};
 use std::path::Path;
-use std::usize;
+
+// Mods
+mod users;
 
 // Terminal option
 fn clear_terminal() -> io::Result<()> {
