@@ -3,41 +3,66 @@ use rusqlite::Connection;
 
 #[derive(Debug)]
 pub struct User {
-  pub id: i32,
+  id: i32,
   pub username: String,
+  pub recorded: bool,
 }
 
 impl User {
-  pub fn new(username: &str) -> Result<Self, Box<dyn std::error::Error>> {
-    let new_user = User {
+  pub fn tomporal_new() -> Self {
+    User {
       id: 0,
-      username: username.to_string(),
-    };
+      username: "".to_string(),
+      recorded: false,
+    }
+  }
 
-    new_user.add()?;
+  pub fn get(&self) -> Self {
+    self.query().unwrap()
+  }
 
-    Ok(new_user)
+  pub fn already_exists(&self) -> bool {
+    self.exists().unwrap()
   }
 }
 
 pub enum AddUserResult {
   Created,
-  Exists,
   Error,
-  TableNotFound,
+  Exists,
 }
 
-pub trait Databaseble {
+trait Databaseble {
+  fn create_table(&self) -> Result<(), Box<dyn std::error::Error>>;
+
   fn table_exists(&self, table_name: &str) -> Result<bool, Box<dyn std::error::Error>>;
 
   fn exists(&self) -> Result<bool, Box<dyn std::error::Error>>;
 
-  fn add(&self) -> Result<AddUserResult, Box<dyn std::error::Error>>;
+  fn create(&self) -> Result<AddUserResult, Box<dyn std::error::Error>>;
 
-  fn get(&self) -> Result<User, Box<dyn std::error::Error>>;
+  fn query(&self) -> Result<User, Box<dyn std::error::Error>>;
 }
 
 impl Databaseble for User {
+  fn create_table(&self) -> Result<(), Box<dyn std::error::Error>> {
+    let connection = Connection::open(get_db_path()?)?;
+
+    connection.execute(
+      "CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY,
+        username TEXT NOT NULL
+      )",
+      [],
+    )?;
+
+    if connection.close().is_err() {
+      return Err("Error closing connection in 'create_table' method".into());
+    }
+
+    Ok(())
+  }
+
   fn table_exists(&self, table_name: &str) -> Result<bool, Box<dyn std::error::Error>> {
     let connection = Connection::open(get_db_path()?)?;
 
@@ -71,19 +96,17 @@ impl Databaseble for User {
     Ok(false)
   }
 
-  fn add(&self) -> Result<AddUserResult, Box<dyn std::error::Error>> {
+  fn create(&self) -> Result<AddUserResult, Box<dyn std::error::Error>> {
     let username = self.username.clone();
 
     let connection = Connection::open(get_db_path()?)?;
 
-    if !self.table_exists("users")? {
-      return Ok(AddUserResult::TableNotFound);
+    if self.exists()? {
+      return Ok(AddUserResult::Exists);
     }
 
-    let found_users = connection.execute("SELECT * FROM users", [])?;
-
-    if found_users > 0 {
-      return Ok(AddUserResult::Exists);
+    if !self.exists()? {
+      self.create_table()?;
     }
 
     connection.execute("INSERT INTO users (username) VALUES (?1)", [username])?;
@@ -95,7 +118,7 @@ impl Databaseble for User {
     Ok(AddUserResult::Created)
   }
 
-  fn get(&self) -> Result<User, Box<dyn std::error::Error>> {
+  fn query(&self) -> Result<User, Box<dyn std::error::Error>> {
     let connection = Connection::open(get_db_path()?)?;
 
     let result = connection.query_row("SELECT * FROM users LIMIT 1", [], |user| {
