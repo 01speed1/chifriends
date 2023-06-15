@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self, Write};
 
 use crossterm::terminal::{Clear, ClearType};
 
@@ -15,7 +15,7 @@ pub fn clear_terminal() -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn get_option_menu_number() -> i32 {
   let mut buffer = String::new();
-  std::io::stdin()
+  io::stdin()
     .read_line(&mut buffer)
     .expect("Failed to get value");
 
@@ -46,4 +46,17 @@ pub fn print_options(options: &Vec<String>) {
   for (index, option) in options.iter().enumerate() {
     println!("{}: {}", index + 1, option);
   }
+}
+
+pub fn print_jump_line() {
+  println!("\n");
+}
+
+pub fn wait_for_press_enter() -> Result<bool, Box<dyn std::error::Error>> {
+  println!("Press enter to continue...");
+  let mut input = String::new();
+  io::stdout().flush()?;
+  io::stdin().read_line(&mut input)?;
+
+  Ok(true)
 }

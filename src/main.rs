@@ -5,24 +5,16 @@ mod interface;
 mod views;
 
 // Imports entities
+mod groups;
 mod users;
 
 // Imports
-use users::User;
+// use users::User;
 
-use views::main_view::main_menu_view;
+use views::main_view::welcome_message_view;
 
 fn main() {
-
-  
-
-  let _main_user = User::new("");
-
-    = match User::already_exists() {
-    true => User = users::User::new("main_user");,
-    false => println!("User does not exist"),
-  }
-
-
-  main_menu_view().unwrap();
+  //loop {
+  welcome_message_view().unwrap();
+  //}
 }
