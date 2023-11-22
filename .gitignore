@@ -12,3 +12,5 @@ Cargo.lock
 user.json
 
 database.db
+
+.vscode
