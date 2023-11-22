@@ -37,14 +37,24 @@ impl User {
     Self::get().username
   }
 
-  pub fn add_group(group_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+  pub fn add_group(group_name: &str) {
     if !Group::already_added(Self::get().id, group_name) {
       Group::add(Self::get().id, group_name);
     } else {
       println!("Group {} already added", &group_name);
     }
+  }
 
-    Ok(())
+  pub fn has_groups() -> bool {
+    if Self::groups_count(Self::get().id).unwrap() > 0 {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  pub fn has_debts() -> bool {
+    todo!()
   }
 }
 
@@ -64,6 +74,8 @@ trait Databaseble {
   fn create(&self) -> Result<AddUserResult, Box<dyn std::error::Error>>;
 
   fn query() -> Result<User, Box<dyn std::error::Error>>;
+
+  fn groups_count(id: i32) -> Result<i32, Box<dyn std::error::Error>>;
 }
 
 impl Databaseble for User {
@@ -167,5 +179,14 @@ impl Databaseble for User {
     }
 
     response
+  }
+
+  fn groups_count(id: i32) -> Result<i32, Box<dyn std::error::Error>> {
+    let connection = Connection::open(get_db_path()?)?;
+
+    let query = "SELECT COUNT(*) FROM groups WHERE user_id = ?;";
+    let found_groups = connection.query_row(query, [id], |row| row.get(0))?;
+
+    Ok(found_groups)
   }
 }

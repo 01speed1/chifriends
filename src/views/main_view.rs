@@ -19,6 +19,8 @@ pub fn welcome_message_view() -> Result<(), Box<dyn std::error::Error>> {
   print_jump_line();
   print_message("created by 01speed1");
   print_jump_line();
+  print_message("Press enter to continue...");
+
   wait_for_press_enter()?;
 
   main_menu_view()?;
@@ -41,38 +43,17 @@ fn new_user_view() -> Result<(), Box<dyn std::error::Error>> {
   Ok(())
 }
 
-mod existing_user {
-  use super::*;
+fn old_user_view() -> Result<(), Box<dyn std::error::Error>> {
+  clear_terminal()?;
 
-  mod group_views {
-    use super::*;
+  let mut title = User::get_username();
+  title = format!("Hi again {}!", title);
 
-    pub fn new_group_view() -> Result<(), Box<dyn std::error::Error>> {
-      clear_terminal()?;
-      print_title("New Group");
-      print_jump_line();
-      print_message("You are creating a new group");
-      print_jump_line();
-      print_message("Enter the name of the group:");
+  print_message(&title);
 
-      let group_name = get_input();
+  
 
-      User::add_group(&group_name);
-
-      Ok(())
-    }
-  }
-
-  pub fn user_view() -> Result<(), Box<dyn std::error::Error>> {
-    clear_terminal()?;
-
-    let mut title = User::get_username();
-    title = format!("Hi again {}!", title);
-
-    print_title(&title);
-
-    Ok(())
-  }
+  Ok(())
 }
 
 pub fn main_menu_view() -> Result<(), Box<dyn std::error::Error>> {
@@ -80,7 +61,7 @@ pub fn main_menu_view() -> Result<(), Box<dyn std::error::Error>> {
     new_user_view()?;
   }
 
-  existing_user::user_view()?;
+  old_user_view()?;
 
   Ok(())
 }

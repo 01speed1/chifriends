@@ -1,1 +1,1 @@
-{"words":["Chifriends","hola","crossterm","serde","watchexec","rusqlite","Databaseble","termion"],"dictionaries":["custom-words"],"dictionaryDefinitions":[{"path":".\/*","addWords":true,"Chifriends":"the app name"}]}
+{"dictionaryDefinitions":[{"Chifriends":"the app name","path":".\/*","addWords":true}],"words":["Chifriends","hola","crossterm","serde","watchexec","rusqlite","Databaseble","termion","AUTOINCREMENT"],"dictionaries":["custom-words"]}

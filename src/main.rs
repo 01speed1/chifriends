@@ -5,6 +5,7 @@ mod interface;
 mod views;
 
 // Imports entities
+mod friends;
 mod groups;
 mod users;
 
