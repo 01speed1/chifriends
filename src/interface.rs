@@ -1,16 +1,18 @@
-use std::io::{self, Write};
+//Notes: This file contains all the functions that are used to interact with the user
 
 use crossterm::terminal::{Clear, ClearType};
+use dialoguer::{theme::ColorfulTheme, Error as DialoguerError, Select};
+use std::io::{self, Write};
 
-pub fn clear_terminal() -> Result<(), Box<dyn std::error::Error>> {
+pub fn clear_terminal() {
   let mut stdout = io::stdout();
   crossterm::queue!(
     stdout,
     Clear(ClearType::All),
     crossterm::cursor::MoveTo(0, 0)
-  )?;
+  );
 
-  Ok(())
+  stdout.flush();
 }
 
 pub fn get_option_menu_number() -> i32 {
@@ -52,11 +54,15 @@ pub fn print_jump_line() {
   println!("\n");
 }
 
-pub fn wait_for_press_enter() -> Result<bool, Box<dyn std::error::Error>> {
-  println!("Press enter to continue...");
-  let mut input = String::new();
-  io::stdout().flush()?;
-  io::stdin().read_line(&mut input)?;
+pub fn get_selectable_option_from_list(options: &[&str]) -> Result<usize, DialoguerError> {
+  let options_with_index = options
+    .iter()
+    .enumerate()
+    .map(|(index, option)| format!("{}. {}", index + 1, option))
+    .collect::<Vec<String>>();
 
-  Ok(true)
+  Select::with_theme(&ColorfulTheme::default())
+    .items(&options_with_index)
+    .default(0)
+    .interact()
 }

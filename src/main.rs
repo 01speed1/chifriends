@@ -2,20 +2,24 @@
 mod constants;
 mod interface;
 
-mod views;
+mod menu;
 
 // Imports entities
-mod friends;
+mod friend;
+mod group_debt;
 mod groups;
-mod users;
+mod user;
+//mod users;
 
 // Imports
-// use users::User;
-
-use views::main_view::welcome_message_view;
+use crate::menu::main_menu;
+use user::User;
 
 fn main() {
-  //loop {
-  welcome_message_view().unwrap();
-  //}
+  let mut main_user = User {
+    group_debts: vec![],
+  };
+  loop {
+    main_menu(&mut main_user);
+  }
 }

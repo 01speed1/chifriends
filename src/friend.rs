@@ -1,14 +1,13 @@
-use crate::constants::get_db_path;
-use rusqlite::{types::ToSql, Connection};
+//use crate::constants::get_db_path;
+//use rusqlite::{types::ToSql, Connection};
 
 #[derive(Debug)]
 pub struct Friend {
-  id: i32,
-  pub user_id: i32,
   pub name: String,
+  pub paid_debt: bool,
 }
 
-trait Databaseble {
+/* trait Databaseble {
   fn create_table() -> Result<(), Box<dyn std::error::Error>>;
 
   fn table_exists(table_name: &str) -> Result<bool, Box<dyn std::error::Error>>;
@@ -52,3 +51,4 @@ impl Databaseble for Friend {
     todo!()
   }
 }
+ */
