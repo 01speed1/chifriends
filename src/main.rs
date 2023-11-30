@@ -1,17 +1,9 @@
-// Mods
-mod constants;
 mod interface;
-
 mod menu;
-
-// Imports entities
 mod friend;
 mod group_debt;
-mod groups;
 mod user;
-//mod users;
 
-// Imports
 use crate::menu::main_menu;
 use user::User;
 

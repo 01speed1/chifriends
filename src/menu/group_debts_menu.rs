@@ -90,7 +90,7 @@ pub fn group_debt_menu(group_debt: &mut GroupDebt) {
   print_jump_line();
 
   print_message("What do you want to do?");
-  let options = ["A friend wants to pay me", "return to group debts list "];
+  let options = ["A friend wants to pay me", "return to group debts list "].to_vec();
   let selected_option: usize = get_selectable_option_from_list(&options).unwrap();
 
   match selected_option {
@@ -101,10 +101,15 @@ pub fn group_debt_menu(group_debt: &mut GroupDebt) {
 
 fn ask_which_friend_paid_menu(source_group_debt: &mut GroupDebt) {
   clear_terminal();
+
+  println!("{:?}", source_group_debt);
+
   let friends = &mut source_group_debt.friends;
 
   print_message("Which friend paid you?");
-  let mut options = friends
+  let clone_friends_for_options = friends.clone();
+
+  let mut options = clone_friends_for_options
     .iter()
     .filter(|friend| !friend.paid_debt)
     .map(|friend| friend.name.as_str())
@@ -113,16 +118,22 @@ fn ask_which_friend_paid_menu(source_group_debt: &mut GroupDebt) {
   let return_option = "return to group debt details";
 
   options.push(return_option);
+  let last_option_index = options.len() - 1;
 
   let selected_option = get_selectable_option_from_list(&options).unwrap();
-
-  let last_option_index = options.len() - 1;
+  let selected_friend_name = options.get(selected_option).unwrap();
 
   if last_option_index == selected_option {
     return group_debt_menu(source_group_debt);
   }
 
-  friends.get_mut(selected_option).unwrap().paid_debt = true;
+  let iterable_found_friends = friends
+    .iter_mut()
+    .filter(|friend| selected_friend_name.eq(&friend.name));
+
+  if let Some(found_friend) = iterable_found_friends.last() {
+    found_friend.paid_debt = true;
+  }
 
   ask_which_friend_paid_menu(source_group_debt);
 }

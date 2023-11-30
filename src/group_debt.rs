@@ -1,6 +1,6 @@
 use crate::friend::Friend;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GroupDebt {
   pub name: String,
   pub friends: Vec<Friend>,
@@ -26,5 +26,9 @@ impl GroupDebt {
       }
     }
     friends_already_paid
+  }
+
+  pub fn all_friends_paid(&self) -> bool {
+    self.friends.iter().all(|friend| friend.paid_debt)
   }
 }
