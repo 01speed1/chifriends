@@ -1,6 +1,7 @@
 use crate::friend::Friend;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GroupDebt {
   pub name: String,
   pub friends: Vec<Friend>,

@@ -19,6 +19,8 @@ pub fn main_menu(user: &mut User) {
     }
   }
 
+  user.save_to_file().unwrap();
+
   print_message("Your group debts:");
 
   let create_group_debts_options = user
@@ -48,6 +50,8 @@ pub fn main_menu(user: &mut User) {
   if new_group_debt_option_index == selected_option {
     new_group_debt_menu(&mut user.group_debts);
   }
+
+  user.save_to_file().unwrap();
 
   group_debt_menu(&mut user.group_debts[selected_option]);
 }
