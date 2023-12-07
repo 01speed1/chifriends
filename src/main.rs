@@ -6,7 +6,7 @@ mod group_debt;
 mod interface;
 mod menu;
 mod user;
-mod view;
+//mod view;
 
 //external uses
 use iced::theme::Button::Destructive;
