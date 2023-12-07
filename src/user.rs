@@ -1,8 +1,10 @@
 use crate::group_debt::GroupDebt;
 use serde::{Deserialize, Serialize};
-use serde_json::{self, json};
-use std::fs::File;
-use std::io::prelude::*;
+use serde_json::{self};
+use std::{
+  fs::File,
+  io::{Read, Write},
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {

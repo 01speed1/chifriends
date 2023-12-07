@@ -11,3 +11,7 @@ An app idea where you can split bills with your horned friends
 The app store your group debts
 
 enjoy!
+
+
+### WSL2 command
+WINIT_UNIX_BACKEND=x11 cargo watch -x run
